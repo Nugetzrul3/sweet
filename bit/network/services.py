@@ -119,7 +119,12 @@ class BTCcomAPI:
         r = requests.get(cls.ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT, headers=cls.fake_ua)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        response = r.json()['data']
+        try:
+            response = r.json()['data']
+        except json.JSONDecodeError:  # pragma: no cover
+            # BTCcom returned a value that cannot be decoded.
+            # May be due to "abusive" message.
+            raise ConnectionError
         if not response:
             return 0
         return response['balance']
@@ -133,10 +138,15 @@ class BTCcomAPI:
         txs_per_page = 50
         payload = {'page': str(offset), 'pagelimit': str(txs_per_page)}
 
-        r = requests.get(endpoint.format(address), timeout=DEFAULT_TIMEOUT, headers=cls.fake_ua)
+        r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT, headers=cls.fake_ua)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        response = r.json()
+        try:
+            response = r.json()
+        except json.JSONDecodeError:  # pragma: no cover
+            # BTCcom returned a value that cannot be decoded.
+            # May be due to "abusive" message.
+            raise ConnectionError
 
         if not response['err_no']:
             response = response['data']
@@ -151,7 +161,13 @@ class BTCcomAPI:
                 r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT, headers=cls.fake_ua)
                 if r.status_code != 200:  # pragma: no cover
                     raise ConnectionError
-                response = r.json()['data']
+                try:
+                    response = r.json()
+                except json.JSONDecodeError:  # pragma: no cover
+                    # BTCcom returned a value that cannot be decoded.
+                    # May be due to "abusive" message.
+                    raise ConnectionError
+                response = response['data']
 
         return transactions
 
@@ -163,8 +179,13 @@ class BTCcomAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
 
-        response = r.json()
-        if response['err_no']:
+        try:
+            response = r.json()
+        except json.JSONDecodeError:  # pragma: no cover
+            # BTCcom returned a value that cannot be decoded.
+            # May be due to "abusive" message.
+            raise ConnectionError
+        if response['err_no']:  # pragma: no cover
             return None
         return response['data']
 
@@ -183,7 +204,12 @@ class BTCcomAPI:
         r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT, headers=cls.fake_ua)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        response = r.json()
+        try:
+            response = r.json()
+        except json.JSONDecodeError:  # pragma: no cover
+            # BTCcom returned a value that cannot be decoded.
+            # May be due to "abusive" message.
+            raise ConnectionError
 
         if not response['err_no']:
             response = response['data']['list']
@@ -200,7 +226,13 @@ class BTCcomAPI:
                 r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT, headers=cls.fake_ua)
                 if r.status_code != 200:  # pragma: no cover
                     raise ConnectionError
-                response = r.json()['data']['list']
+                try:
+                    response = r.json()
+                except json.JSONDecodeError:  # pragma: no cover
+                    # BTCcom returned a value that cannot be decoded.
+                    # May be due to "abusive" message.
+                    raise ConnectionError
+                response = response['data']['list']
                 total_unspents = len(response)
 
         return unspents[::-1]
