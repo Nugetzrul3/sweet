@@ -174,7 +174,7 @@ class BTCcomAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.TX_API.format(txid) + '/raw', timeout=DEFAULT_TIMEOUT, headers=cls.fake_ua)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -280,7 +280,7 @@ class BlockchairAPI:
         payload = {'offset': str(offset), 'limit': str(txs_per_page)}
 
         r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return []
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -311,7 +311,7 @@ class BlockchairAPI:
         payload = {'offset': str(offset), 'limit': str(txs_per_page)}
 
         r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return []
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -335,26 +335,26 @@ class BlockchairAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.MAIN_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
 
         response = r.json()['data']
-        if not response:
+        if not response:  # pragma: no cover
             return None
         return response[txid]['raw_transaction']
 
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
         r = requests.get(cls.TEST_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
 
         response = r.json()['data']
-        if not response:
+        if not response:  # pragma: no cover
             return None
         return response[txid]['raw_transaction']
 
@@ -368,7 +368,7 @@ class BlockchairAPI:
         payload = {'offset': str(offset), 'limit': str(unspents_per_page)}
 
         r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -411,7 +411,7 @@ class BlockchairAPI:
         payload = {'offset': str(offset), 'limit': unspents_per_page}
 
         r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -499,7 +499,7 @@ class BlockstreamAPI:
         transactions = []
 
         r = requests.get(endpoint.format(address, ''), timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 400:
+        if r.status_code == 400:  # pragma: no cover
             return []
         elif r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -524,7 +524,7 @@ class BlockstreamAPI:
         transactions = []
 
         r = requests.get(endpoint.format(address, ''), timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 400:
+        if r.status_code == 400:  # pragma: no cover
             return []
         elif r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -545,7 +545,7 @@ class BlockstreamAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.MAIN_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -554,7 +554,7 @@ class BlockstreamAPI:
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
         r = requests.get(cls.TEST_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -570,7 +570,7 @@ class BlockstreamAPI:
 
         r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
 
-        if r.status_code == 400:
+        if r.status_code == 400:  # pragma: no cover
             return []
         elif r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -601,7 +601,7 @@ class BlockstreamAPI:
 
         r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
 
-        if r.status_code == 400:
+        if r.status_code == 400:  # pragma: no cover
             return []
         elif r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -630,7 +630,7 @@ class BlockstreamAPI:
         return True if r.status_code == 200 else False
 
 
-class InsightAPI:
+class InsightAPI:  # pragma: no cover
     MAIN_ENDPOINT = ''
     MAIN_ADDRESS_API = ''
     MAIN_BALANCE_API = ''
@@ -656,7 +656,7 @@ class InsightAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.MAIN_TX_API + txid, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -826,7 +826,7 @@ class BlockchainAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.TX_API + txid + '?limit=0&format=hex', timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 500 and r.text == 'Transaction not found':
+        if r.status_code == 500 and r.text == 'Transaction not found':  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -843,7 +843,7 @@ class BlockchainAPI:
 
         r = requests.get(endpoint, params=payload, timeout=DEFAULT_TIMEOUT)
 
-        if r.status_code == 500:
+        if r.status_code == 500:  # pragma: no cover
             return []
         elif r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -916,7 +916,7 @@ class SmartbitAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.MAIN_TX_API.format(txid) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 400:
+        if r.status_code == 400:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -952,7 +952,7 @@ class SmartbitAPI:
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
         r = requests.get(cls.TEST_TX_API.format(txid) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 400:
+        if r.status_code == 400:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
