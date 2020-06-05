@@ -7,9 +7,9 @@ with open('bit/__init__.py', 'r') as f:
             break
 
 setup(
-    name='bit',
+    name='sweet',
     version=version,
-    description='Bitcoin made easy.',
+    description='Sugarchain made easy.',
     long_description=open('README.rst', 'r').read(),
     author='Ofek Lev',
     author_email='ofekmeister@gmail.com',
@@ -20,7 +20,7 @@ setup(
     license='MIT',
 
     keywords=(
-        'bitcoin',
+        'sugarchain',
         'cryptocurrency',
         'payments',
         'tools',
