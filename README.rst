@@ -1,4 +1,6 @@
-Bit: Bitcoin made easy.
+Forked from Ofek's `Bit Library <https://github.com/ofek/bit>`_
+
+Sweet: Sugarchain made easy.
 =======================
 
 .. image:: https://img.shields.io/pypi/v/bit.svg?style=flat-square
