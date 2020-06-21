@@ -5,7 +5,7 @@ from time import time
 
 import requests
 
-from bit.constants import SATOSHI, uBTC, mBTC, BTC
+from bit.constants import SATOSHI, uSUGAR, mSUGAR, SUGAR
 from bit.utils import Decimal
 
 DEFAULT_CACHE_TIME = 60
@@ -47,9 +47,9 @@ SUPPORTED_CURRENCIES = OrderedDict(
 # https://en.wikipedia.org/wiki/ISO_4217
 CURRENCY_PRECISION = {
     'satoshi': 0,
-    'ubtc': 2,
-    'mbtc': 5,
-    'btc': 8,
+    'usugar': 2,
+    'msugar': 5,
+    'sugar': 8,
     'usd': 2,
     'eur': 2,
     'gbp': 2,
@@ -84,15 +84,15 @@ def satoshi_to_satoshi():
 
 
 def ubtc_to_satoshi():
-    return uBTC
+    return uSUGAR
 
 
 def mbtc_to_satoshi():
-    return mBTC
+    return mSUGAR
 
 
 def btc_to_satoshi():
-    return BTC
+    return SUGAR
 
 
 class BitpayRates:
@@ -109,7 +109,7 @@ class BitpayRates:
         r = requests.get(cls.SINGLE_RATE + currency, headers=headers)
         r.raise_for_status()
         rate = r.json()['data']['rate']
-        return int(ONE / Decimal(rate) * BTC)
+        return int(ONE / Decimal(rate) * SUGAR)
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
@@ -204,7 +204,7 @@ class BlockchainRates:
         r = requests.get(cls.SINGLE_RATE.format(currency))
         r.raise_for_status()
         rate = r.text
-        return int(Decimal(rate) * BTC)
+        return int(Decimal(rate) * SUGAR)
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
