@@ -103,27 +103,27 @@ class RPCMethod:
 
 
 class InsightAPI:
-    MAIN_ENDPOINT = ''
-    MAIN_ADDRESS_API = ''
-    MAIN_BALANCE_API = ''
-    MAIN_UNSPENT_API = ''
-    MAIN_TX_PUSH_API = ''
-    MAIN_TX_API = ''
-    TX_PUSH_PARAM = ''
+    MAIN_ENDPOINT = 'https://api.sugarchain.org'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + '/history/'
+    MAIN_BALANCE_API = MAIN_ENDPOINT + '/balance/{}'
+    MAIN_UNSPENT_API = MAIN_ENDPOINT + '/unspent/{}'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + '/broadcast/'
+    MAIN_TX_API = MAIN_ENDPOINT + '/transaction/'
+    TX_PUSH_PARAM = '' #TODO Not sure for sugarchain
 
     @classmethod
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()
+        return r.json()['result']['balance']
 
     @classmethod
     def get_transactions(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()['transactions']
+        return r.json()['result']['tx']
 
     @classmethod
     def get_transaction_by_id(cls, txid):
@@ -132,7 +132,7 @@ class InsightAPI:
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()["rawtx"]
+        return r.json()["result"]
 
     @classmethod
     def get_unspent(cls, address):
@@ -157,33 +157,33 @@ class InsightAPI:
 
 
 class BitpayAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://insight.bitpay.com/api/'
-    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
-    MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
-    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
-    MAIN_TX_API = MAIN_ENDPOINT + 'rawtx/'
-    TEST_ENDPOINT = 'https://test-insight.bitpay.com/api/'
-    TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
-    TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
-    TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
-    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
-    TEST_TX_API = TEST_ENDPOINT + 'rawtx/'
-    TX_PUSH_PARAM = 'rawtx'
+    MAIN_ENDPOINT = 'https://api.sugarchain.org'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + '/history/'
+    MAIN_BALANCE_API = MAIN_ENDPOINT + '/balance/{}'
+    MAIN_UNSPENT_API = MAIN_ENDPOINT + '/unspent/{}'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + '/broadcast/'
+    MAIN_TX_API = MAIN_ENDPOINT + '/transaction/'
+    TEST_ENDPOINT = 'https://api-testnet.sugarchain.org'
+    TEST_ADDRESS_API = TEST_ENDPOINT + '/history/'
+    TEST_BALANCE_API = TEST_ENDPOINT + '/balance/{}'
+    TEST_UNSPENT_API = TEST_ENDPOINT + '/unspent/{}'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + '/broadcast/'
+    TEST_TX_API = TEST_ENDPOINT + '/transaction'
+    TX_PUSH_PARAM = 'rawtx' # TODO Not sure for sugarchain
 
     @classmethod
     def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()
+        return r.json()['result']['balance']
 
     @classmethod
     def get_transactions_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()['transactions']
+        return r.json()['result']['tx']
 
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
@@ -192,10 +192,10 @@ class BitpayAPI(InsightAPI):
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()["rawtx"]
+        return r.json()['result']
 
     @classmethod
-    def get_unspent_testnet(cls, address):
+    def get_unspent_testnet(cls, address): #TODO Change Unspent method for sugarchain
         r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -214,6 +214,7 @@ class BitpayAPI(InsightAPI):
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
         r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
+        #TODO Need review from @volbil
 
 
 class BlockchainAPI:
