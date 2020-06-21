@@ -103,6 +103,60 @@ class RPCMethod:
 
 
 class InsightAPI:
+    MAIN_ENDPOINT = ''
+    MAIN_ADDRESS_API = ''
+    MAIN_BALANCE_API = ''
+    MAIN_UNSPENT_API = ''
+    MAIN_TX_PUSH_API = ''
+    MAIN_TX_API = ''
+    TX_PUSH_PARAM = ''
+
+    @classmethod
+    def get_balance(cls, address):
+        r = requests.get(cls.MAIN_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.json()
+
+    @classmethod
+    def get_transactions(cls, address):
+        r = requests.get(cls.MAIN_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.json()['transactions']
+
+    @classmethod
+    def get_transaction_by_id(cls, txid):
+        r = requests.get(cls.MAIN_TX_API + txid, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.json()["rawtx"]
+
+    @classmethod
+    def get_unspent(cls, address):
+        r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return [
+            Unspent(
+                currency_to_satoshi(tx['amount'], 'btc'),
+                tx['confirmations'],
+                tx['scriptPubKey'],
+                tx['txid'],
+                tx['vout'],
+            )
+            for tx in r.json()
+        ]
+
+    @classmethod
+    def broadcast_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        return True if r.status_code == 200 else False
+
+
+class SugarchainAPI:
     MAIN_ENDPOINT = 'https://api.sugarchain.org'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + '/history/'
     MAIN_BALANCE_API = MAIN_ENDPOINT + '/balance/{}'
@@ -135,7 +189,7 @@ class InsightAPI:
         return r.json()["result"]
 
     @classmethod
-    def get_unspent(cls, address):
+    def get_unspent(cls, address): #TODO Change Unspent method for sugar
         r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
