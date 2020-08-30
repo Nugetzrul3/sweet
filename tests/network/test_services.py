@@ -9,6 +9,7 @@ from bit.network.services import (
     RPCHost,
     RPCMethod,
     BitpayAPI,
+    SugarchainAPI,
     BlockchainAPI,
     NetworkAPI,
     SmartbitAPI,
@@ -359,15 +360,15 @@ class TestNetworkAPI:
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
-class TestBitpayAPI:
+class TestSugarchainAPI:
     def test_get_balance_return_type(self):
-        assert isinstance(BitpayAPI.get_balance(MAIN_ADDRESS_USED1), int)
+        assert isinstance(SugarchainAPI.get_balance(MAIN_ADDRESS_USED1), int)
 
     def test_get_balance_main_used(self):
-        assert BitpayAPI.get_balance(MAIN_ADDRESS_USED1) > 0
+        assert SugarchainAPI.get_balance(MAIN_ADDRESS_USED1) > 0
 
     def test_get_balance_main_unused(self):
-        assert BitpayAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
+        assert SugarchainAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
 
     def test_get_balance_test_used(self):
         assert BitpayAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
@@ -376,13 +377,13 @@ class TestBitpayAPI:
         assert BitpayAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
 
     def test_get_transactions_return_type(self):
-        assert iter(BitpayAPI.get_transactions(MAIN_ADDRESS_USED1))
+        assert iter(SugarchainAPI.get_transactions(MAIN_ADDRESS_USED1))
 
     def test_get_transactions_main_used(self):
-        assert len(BitpayAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
+        assert len(SugarchainAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 218
 
     def test_get_transactions_main_unused(self):
-        assert len(BitpayAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(SugarchainAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transactions_test_used(self):
         assert len(BitpayAPI.get_transactions_testnet(TEST_ADDRESS_USED2)) >= 444
@@ -391,11 +392,11 @@ class TestBitpayAPI:
         assert len(BitpayAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_transaction_by_id_valid(self):
-        tx = BitpayAPI.get_transaction_by_id(MAIN_TX_VALID)
+        tx = SugarchainAPI.get_transaction_by_id(MAIN_TX_VALID)
         assert calc_txid(tx) == MAIN_TX_VALID
 
     def test_get_transaction_by_id_invalid(self):
-        assert BitpayAPI.get_transaction_by_id(TX_INVALID) == None
+        assert SugarchainAPI.get_transaction_by_id(TX_INVALID) == None
 
     def test_get_transaction_by_id_test_valid(self):
         tx = BitpayAPI.get_transaction_by_id_testnet(TEST_TX_VALID)
@@ -405,13 +406,13 @@ class TestBitpayAPI:
         assert BitpayAPI.get_transaction_by_id_testnet(TX_INVALID) == None
 
     def test_get_unspent_return_type(self):
-        assert iter(BitpayAPI.get_unspent(MAIN_ADDRESS_USED1))
+        assert iter(SugarchainAPI.get_unspent(MAIN_ADDRESS_USED1))
 
     def test_get_unspent_main_used(self):
-        assert len(BitpayAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
+        assert len(SugarchainAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
 
     def test_get_unspent_main_unused(self):
-        assert len(BitpayAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
+        assert len(SugarchainAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_test_used(self):
         assert len(BitpayAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194

@@ -3,7 +3,7 @@ import json
 import logging
 from decimal import Decimal, getcontext
 
-from bit.constants import BTC
+from bit.constants import SUGAR
 from bit.network import currency_to_satoshi
 from bit.network.meta import Unspent
 from bit.exceptions import BitcoinNodeException
@@ -29,9 +29,9 @@ class RPCHost:
         return RPCMethod(rpc_method, self)
 
     def get_balance(self, address):
-        getcontext().prec = len(str(BTC))
+        getcontext().prec = len(str(SUGAR))
         b = Decimal(self.getreceivedbyaddress(address, 0))
-        return int(b * BTC)
+        return int(b * SUGAR)
 
     def get_balance_testnet(self, address):
         return self.get_balance(address)
@@ -155,7 +155,6 @@ class InsightAPI:
         r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
-
 class SugarchainAPI:
     MAIN_ENDPOINT = 'https://api.sugarchain.org'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + '/history/'
@@ -189,7 +188,7 @@ class SugarchainAPI:
         return r.json()["result"]
 
     @classmethod
-    def get_unspent(cls, address): #TODO Change Unspent method for sugar
+    def get_unspent(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -209,14 +208,7 @@ class SugarchainAPI:
         r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
-
-class BitpayAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://api.sugarchain.org'
-    MAIN_ADDRESS_API = MAIN_ENDPOINT + '/history/'
-    MAIN_BALANCE_API = MAIN_ENDPOINT + '/balance/{}'
-    MAIN_UNSPENT_API = MAIN_ENDPOINT + '/unspent/{}'
-    MAIN_TX_PUSH_API = MAIN_ENDPOINT + '/broadcast/'
-    MAIN_TX_API = MAIN_ENDPOINT + '/transaction/'
+class BitpayAPI(SugarchainAPI):
     TEST_ENDPOINT = 'https://api-testnet.sugarchain.org'
     TEST_ADDRESS_API = TEST_ENDPOINT + '/history/'
     TEST_BALANCE_API = TEST_ENDPOINT + '/balance/{}'
@@ -454,7 +446,6 @@ class SmartbitAPI:
         r = requests.post(cls.TEST_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
-
 class NetworkAPI:
     IGNORED_ERRORS = (
         ConnectionError,
@@ -463,35 +454,60 @@ class NetworkAPI:
         requests.exceptions.ReadTimeout,
     )
 
-    GET_BALANCE_MAIN = [BitpayAPI.get_balance, SmartbitAPI.get_balance, BlockchainAPI.get_balance]
+    GET_BALANCE_MAIN = [
+        BitpayAPI.get_balance, 
+        SmartbitAPI.get_balance, 
+        BlockchainAPI.get_balance,
+        SugarchainAPI.get_balance,
+    ]
     GET_TRANSACTIONS_MAIN = [
         BitpayAPI.get_transactions,  # Limit 1000
         SmartbitAPI.get_transactions,  # Limit 1000
         BlockchainAPI.get_transactions,
+        SugarchainAPI.get_transactions,
     ]  # No limit, requires multiple requests
     GET_TRANSACTION_BY_ID_MAIN = [
         BitpayAPI.get_transaction_by_id,
         SmartbitAPI.get_transaction_by_id,
         BlockchainAPI.get_transaction_by_id,
+        SugarchainAPI.get_transactions,
     ]
     GET_UNSPENT_MAIN = [
         BitpayAPI.get_unspent,  # No limit
         SmartbitAPI.get_unspent,  # Limit 1000
         BlockchainAPI.get_unspent,
+        SugarchainAPI.get_unspent,
     ]  # Limit 250
-    BROADCAST_TX_MAIN = [BitpayAPI.broadcast_tx, SmartbitAPI.broadcast_tx, BlockchainAPI.broadcast_tx]  # Limit 5/minute
+    BROADCAST_TX_MAIN = [
+        BitpayAPI.broadcast_tx, 
+        SmartbitAPI.broadcast_tx, 
+        BlockchainAPI.broadcast_tx,
+        SugarchainAPI.broadcast_tx,
+    ]  # Limit 5/minute
 
-    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet, SmartbitAPI.get_balance_testnet]
+    GET_BALANCE_TEST = [
+        BitpayAPI.get_balance_testnet, 
+        SmartbitAPI.get_balance_testnet,
+        ]
     GET_TRANSACTIONS_TEST = [
         BitpayAPI.get_transactions_testnet,  # Limit 1000
         SmartbitAPI.get_transactions_testnet,
     ]  # Limit 1000
-    GET_TRANSACTION_BY_ID_TEST = [BitpayAPI.get_transaction_by_id_testnet, SmartbitAPI.get_transaction_by_id_testnet]
-    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet, SmartbitAPI.get_unspent_testnet]  # No limit  # Limit 1000
-    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet, SmartbitAPI.broadcast_tx_testnet]  # Limit 5/minute
+    GET_TRANSACTION_BY_ID_TEST = [
+        BitpayAPI.get_transaction_by_id_testnet, 
+        SmartbitAPI.get_transaction_by_id_testnet
+    ]
+    GET_UNSPENT_TEST = [
+        BitpayAPI.get_unspent_testnet, 
+        SmartbitAPI.get_unspent_testnet
+    ]  # No limit  # Limit 1000
+    BROADCAST_TX_TEST = [
+        BitpayAPI.broadcast_tx_testnet, 
+        SmartbitAPI.broadcast_tx_testnet
+    ]  # Limit 5/minute
 
     @classmethod
-    def connect_to_node(cls, user, password, host='localhost', port=8332, use_https=False, testnet=False):
+    def connect_to_node(cls, user, password, host='localhost', port=34229, use_https=False, testnet=False):
         """Connect to a remote Bitcoin node instead of using web APIs.
         Allows to connect to a testnet and mainnet Bitcoin node simultaneously.
 
