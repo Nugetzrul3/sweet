@@ -264,7 +264,6 @@ class PrivateKey(BaseKey):
         message_is_hex=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
-
         :param outputs: A sequence of outputs you wish to send in the form
                         ``(destination, amount, currency)``. The amount can
                         be either an int, float, or string as long as it is

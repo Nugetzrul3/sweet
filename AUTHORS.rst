@@ -1,9 +1,15 @@
 Bit is written and maintained by Ofek Lev.
+Sweet is a modified version of Bit and is maintained by @Nugetzrul3 and @Volbil
 
 Maintainers
 -----------
 
+Bit:
 - Ofek Lev <ofekmeister@gmail.com> `@ofek <https://github.com/ofek>`_
+
+Sweet:
+- Nugetzrul3 <popingcorn12@gmail.com> `@Nugetzrul3 <https://github.com/Nugetzrul3>
+- Volbil <volbil@protonmail.com> `@volbil <https://github.com/volbil>
 
 Contributors
 ------------

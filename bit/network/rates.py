@@ -17,9 +17,9 @@ ONE = Decimal(1)
 SUPPORTED_CURRENCIES = OrderedDict(
     [
         ('satoshi', 'Satoshi'),
-        ('ubtc', 'Microbitcoin'),
-        ('mbtc', 'Millibitcoin'),
-        ('btc', 'Bitcoin'),
+        ('usugar', 'Microsugar'),
+        ('msugar', 'Millisugar'),
+        ('sugar', 'Sugarchain'),
         ('usd', 'United States Dollar'),
         ('eur', 'Eurozone Euro'),
         ('gbp', 'Pound Sterling'),
@@ -101,14 +101,14 @@ class BitpayRates:
     https://bitpay.com/api/rates#rest-api-resources-rates
     """
 
-    SINGLE_RATE = 'https://bitpay.com/rates/BTC/'
+    SINGLE_RATE = 'https://api.coingecko.com/api/v3/simple/price?ids=sugarchain&vs_currencies=btc'
 
     @classmethod
     def currency_to_satoshi(cls, currency):
-        headers = {"x-accept-version": "2.0.0", "Accept": "application/json"}
+        headers = {"accept": "application/json"}
         r = requests.get(cls.SINGLE_RATE + currency, headers=headers)
         r.raise_for_status()
-        rate = r.json()['data']['rate']
+        rate = r.json()['sugarchain']['usd']
         return int(ONE / Decimal(rate) * SUGAR)
 
     @classmethod
